@@ -1,12 +1,13 @@
 FROM 812206152185.dkr.ecr.us-west-2.amazonaws.com/latch-base:dd8f-main
 
 RUN apt-get update -y && \
-    apt-get install -y curl unzip
+    apt-get install -y curl unzip git
 
 # Install Nextflow
 RUN apt-get install -y default-jre-headless 
-RUN curl -s https://get.nextflow.io | bash \
-    && mv nextflow /usr/bin/ && chmod 777 /usr/bin/nextflow 
+RUN curl -s https://get.nextflow.io | bash && \
+    mv nextflow /usr/bin/ && \
+    chmod 777 /usr/bin/nextflow 
 
 # Install micromamba
 ENV CONDA_DIR /opt/conda
@@ -31,7 +32,8 @@ RUN micromamba create -f /root/rnaseq-nf/conda.yml -y
 # STOP HERE:
 # The following lines are needed to ensure your build environement works
 # correctly with latch.
-RUN python3 -m pip install --upgrade latch
+RUN git clone https://github.com/latchbio/latch && cd latch && pip install -e .
+
 COPY wf /root/wf
 ARG tag
 ENV FLYTE_INTERNAL_IMAGE $tag

@@ -13,11 +13,11 @@ from latch.types import LatchAuthor, LatchFile, LatchMetadata, LatchParameter, L
 @medium_task
 def rnaseq_task(
     reads: List[LatchFile] = [
-        LatchFile("latch:///rnaseq-nf/ggal_gut_1.fq"),
-        LatchFile("latch:///rnaseq-nf/ggal_gut_2.fq"),
+        LatchFile("s3://latch-public/test-data/6064/rnaseq-nf/data/ggal/ggal_gut_1.fq"),
+        LatchFile("s3://latch-public/test-data/6064/rnaseq-nf/data/ggal/ggal_gut_2.fq"),
     ],
     transcriptome: LatchFile = LatchFile(
-        "latch:///rnaseq-nf/ggal_1_48850000_49020000.Ggal71.500bpflank.fa"
+        "s3://latch-public/test-data/6064/rnaseq-nf/data/ggal/ggal_1_48850000_49020000.Ggal71.500bpflank.fa"
     ),
     outdir: LatchDir = LatchDir("latch:///rnaseq-nf/results"),
 ) -> LatchDir:
@@ -31,7 +31,7 @@ def rnaseq_task(
 
     files = "/root/read_{1,2}.fq"
 
-    _nf_cmd = [
+    nf_cmd = [
         "/root/bin/micromamba",
         "run",
         "-n",
@@ -46,7 +46,7 @@ def rnaseq_task(
         """,
     ]
 
-    subprocess.run(_nf_cmd, check=True)
+    subprocess.run(nf_cmd, check=True)
 
     return LatchDir("/root/results", outdir.remote_path)
 
@@ -54,7 +54,7 @@ def rnaseq_task(
 """The metadata included here will be injected into your interface."""
 metadata = LatchMetadata(
     display_name="Porting RNAseq-NF pipeline to Latch SDK",
-    documentation="your-docs.dev",
+    documentation="https://github.com/latchbio/nextflow-latch-wf",
     author=LatchAuthor(
         name="Hannah Le",
         email="hannah@latch.bio",
@@ -110,11 +110,15 @@ LaunchPlan(
     "Test Data",
     {
         "reads": [
-            LatchFile("s3://test-data/6064/rnaseq-nf/data/ggal/ggal_gut_1.fq"),
-            LatchFile("s3://test-data/6064/rnaseq-nf/data/ggal/ggal_gut_2.fq"),
+            LatchFile(
+                "s3://latch-public/test-data/6064/rnaseq-nf/data/ggal/ggal_gut_1.fq"
+            ),
+            LatchFile(
+                "s3://latch-public/test-data/6064/rnaseq-nf/data/ggal/ggal_gut_2.fq"
+            ),
         ],
         "transcriptome": LatchFile(
-            "s3://test-data/6064/rnaseq-nf/data/ggal/ggal_1_48850000_49020000.Ggal71.500bpflank.fa"
+            "s3://latch-public/test-data/6064/rnaseq-nf/data/ggal/ggal_1_48850000_49020000.Ggal71.500bpflank.fa"
         ),
         "outdir": LatchDir("latch:///welcome"),
     },
